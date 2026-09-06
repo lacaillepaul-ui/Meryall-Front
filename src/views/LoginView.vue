@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuth } from '@/composables/useAuth'
 
 type Tab = 'login' | 'admin' | 'register'
 
@@ -9,6 +10,8 @@ const username = ref('')
 const password = ref('')
 const error = ref('')
 const router = useRouter()
+
+const { login } = useAuth()
 
 const endpoints: Record<Tab, string> = {
   login: `${import.meta.env.VITE_API_URL}/auth/login`,
@@ -43,10 +46,8 @@ async function handleSubmit() {
     }
 
     const data = await res.json()
-    localStorage.setItem('token', data.access_token)
-    localStorage.setItem('username', data.username)
-    localStorage.setItem('role', data.role)
-
+    console.log(data)
+    login(data.access_token, data.username, data.role, data.id)
     router.push('/')
   } catch (e) {
     error.value = (e as Error).message
@@ -57,22 +58,13 @@ async function handleSubmit() {
 <template>
   <div class="login-page">
     <div class="tabs">
-      <button
-        :class="{ active: activeTab === 'login' }"
-        @click="switchTab('login')"
-      >
+      <button :class="{ active: activeTab === 'login' }" @click="switchTab('login')">
         Connexion
       </button>
-      <button
-        :class="{ active: activeTab === 'admin' }"
-        @click="switchTab('admin')"
-      >
+      <button :class="{ active: activeTab === 'admin' }" @click="switchTab('admin')">
         Connexion admin
       </button>
-      <button
-        :class="{ active: activeTab === 'register' }"
-        @click="switchTab('register')"
-      >
+      <button :class="{ active: activeTab === 'register' }" @click="switchTab('register')">
         Inscription
       </button>
     </div>

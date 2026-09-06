@@ -4,9 +4,8 @@
       <RouterLink to="/" class="navbar__btn">Accueil</RouterLink>
       <RouterLink to="/fiches" class="navbar__btn">Fiches</RouterLink>
     </nav>
-    <button class="navbar__logout" @click="logout">
-      Déconnexion
-    </button>
+    <p class="navbar_user">{{ username }} : {{ role }}</p>
+    <button class="navbar__logout" @click="handleLogout">Déconnexion</button>
   </header>
 
   <main>
@@ -16,13 +15,14 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
+import { useAuth } from '@/composables/useAuth'
 
 const router = useRouter()
 
-function logout() {
-  localStorage.removeItem('token')
-  localStorage.removeItem('username')
-  localStorage.removeItem('role')
+const { username, role, logout } = useAuth()
+
+function handleLogout() {
+  logout()
   router.push('/login')
 }
 </script>
@@ -57,6 +57,10 @@ function logout() {
 .navbar__btn.router-link-active {
   background-color: rgba(255, 255, 255, 0.25);
   font-weight: bold;
+}
+
+.navbar_user {
+  color: white;
 }
 
 .navbar__logout {
