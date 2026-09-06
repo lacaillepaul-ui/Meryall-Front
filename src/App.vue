@@ -4,7 +4,6 @@
       <RouterLink to="/" class="navbar__btn">Accueil</RouterLink>
       <RouterLink to="/fiches" class="navbar__btn">Fiches</RouterLink>
     </nav>
-    <p>{{ localStorage }}</p>
     <button class="navbar__logout" @click="logout">
       Déconnexion
     </button>

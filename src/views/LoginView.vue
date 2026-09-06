@@ -11,9 +11,9 @@ const error = ref('')
 const router = useRouter()
 
 const endpoints: Record<Tab, string> = {
-  login: 'http://localhost:8000/auth/login',
-  admin: 'http://localhost:8000/auth/admin/login',
-  register: 'http://localhost:8000/auth/register',
+  login: 'http://import.meta.env.VITE_API_URL/auth/login',
+  admin: 'http://import.meta.env.VITE_API_URL/auth/admin/login',
+  register: 'http://import.meta.env.VITE_API_URL/auth/register',
 }
 
 function switchTab(tab: Tab) {
