@@ -52,6 +52,7 @@
 </template>
 
 <script setup lang="ts">
+import { useRouter } from 'vue-router'
 import { ref, onMounted } from 'vue'
 import { useAuth } from '@/composables/useAuth'
 
@@ -60,6 +61,8 @@ interface ICharacter {
   name: string
   owner_id: string
 }
+
+const router = useRouter()
 
 const { token, role, id } = useAuth()
 const apiUrl = import.meta.env.VITE_API_URL
@@ -132,7 +135,9 @@ async function newCharacter() {
 }
 
 function openCharacter(character: ICharacter) {}
-function editCharacter(character: ICharacter) {}
+function editCharacter(character: ICharacter) {
+  router.push({ name: 'edit-character', params: { id: character.id } })
+}
 
 onMounted(fetchCharacters)
 </script>
