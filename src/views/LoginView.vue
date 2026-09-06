@@ -2,6 +2,10 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 type Tab = 'login' | 'admin' | 'register'
 
@@ -19,8 +23,14 @@ const endpoints: Record<Tab, string> = {
   register: `${import.meta.env.VITE_API_URL}/auth/register`,
 }
 
-function switchTab(tab: Tab) {
-  activeTab.value = tab
+const labels: Record<Tab, string> = {
+  login: 'Connexion',
+  admin: 'Admin',
+  register: 'Inscription',
+}
+
+function switchTab(tab: string) {
+  activeTab.value = tab as Tab
   error.value = ''
   password.value = ''
 }
@@ -46,7 +56,6 @@ async function handleSubmit() {
     }
 
     const data = await res.json()
-    console.log(data)
     login(data.access_token, data.username, data.role, data.id)
     router.push('/')
   } catch (e) {
@@ -56,74 +65,56 @@ async function handleSubmit() {
 </script>
 
 <template>
-  <div class="login-page">
-    <div class="tabs">
-      <button :class="{ active: activeTab === 'login' }" @click="switchTab('login')">
-        Connexion
-      </button>
-      <button :class="{ active: activeTab === 'admin' }" @click="switchTab('admin')">
-        Connexion admin
-      </button>
-      <button :class="{ active: activeTab === 'register' }" @click="switchTab('register')">
-        Inscription
-      </button>
+  <div class="min-h-screen bg-ink flex items-center justify-center p-6">
+    <div class="w-full max-w-sm bg-parchment border border-gold/40 p-8">
+      <h1 class="font-display text-3xl text-ink text-center mb-6">Registre des Aventuriers</h1>
+
+      <Tabs :model-value="activeTab" @update:model-value="switchTab" class="mb-6">
+        <TabsList
+          class="grid grid-cols-3 w-full bg-transparent border-b border-ink/20 rounded-none p-0"
+        >
+          <TabsTrigger
+            v-for="tab in ['login', 'admin', 'register'] as Tab[]"
+            :key="tab"
+            :value="tab"
+            class="font-body rounded-none border-b-2 border-transparent data-[state=active]:border-seal data-[state=active]:text-seal data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+          >
+            {{ labels[tab] }}
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
+
+      <form class="flex flex-col gap-4" @submit.prevent="handleSubmit">
+        <div class="flex flex-col gap-1.5">
+          <Label for="username" class="font-body text-ink/80">Nom d'utilisateur</Label>
+          <Input
+            id="username"
+            v-model="username"
+            required
+            class="rounded-none border-ink/30 bg-white/40 focus-visible:ring-seal"
+          />
+        </div>
+
+        <div v-if="activeTab === 'admin'" class="flex flex-col gap-1.5">
+          <Label for="password" class="font-body text-ink/80">Mot de passe</Label>
+          <Input
+            id="password"
+            v-model="password"
+            type="password"
+            required
+            class="rounded-none border-ink/30 bg-white/40 focus-visible:ring-seal"
+          />
+        </div>
+
+        <p v-if="error" class="font-body text-sm text-seal">{{ error }}</p>
+
+        <Button
+          type="submit"
+          class="mt-2 rounded-none bg-seal hover:bg-seal/90 text-parchment font-body tracking-wide"
+        >
+          {{ activeTab === 'register' ? "S'inscrire" : 'Se connecter' }}
+        </Button>
+      </form>
     </div>
-
-    <form @submit.prevent="handleSubmit">
-      <div>
-        <label>Nom d'utilisateur</label>
-        <input v-model="username" required />
-      </div>
-
-      <div v-if="activeTab === 'admin'">
-        <label>Mot de passe</label>
-        <input v-model="password" type="password" required />
-      </div>
-
-      <p v-if="error" class="error">{{ error }}</p>
-
-      <button type="submit">
-        {{ activeTab === 'register' ? "S'inscrire" : 'Se connecter' }}
-      </button>
-    </form>
   </div>
 </template>
-
-<style scoped>
-.login-page {
-  max-width: 320px;
-  margin: 4rem auto;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.tabs {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.tabs button {
-  flex: 1;
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  background: #f5f5f5;
-  cursor: pointer;
-}
-
-.tabs button.active {
-  background: #2c3e50;
-  color: white;
-  border-color: #2c3e50;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.error {
-  color: red;
-}
-</style>
