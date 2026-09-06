@@ -29,7 +29,7 @@ const labels: Record<Tab, string> = {
   register: 'Inscription',
 }
 
-function switchTab(tab: string) {
+function switchTab(tab: string | number) {
   activeTab.value = tab as Tab
   error.value = ''
   password.value = ''
